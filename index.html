@@ -868,13 +868,38 @@
     }
   });
 
-  // Клик по единице измерения рядом с полем ставит курсор в поле.
-  root.addEventListener('click', function (e) {
-    var control = e.target.closest && e.target.closest('.ep-control');
-    if (control && e.target.tagName !== 'INPUT') {
-      var input = control.querySelector('input');
-      if (input) input.focus();
+  // Курсор — в конец числа, когда поле получает фокус касанием или кликом по единице измерения и подписи.
+  // Safari при фокусе из скрипта ставит курсор в начало, а iOS при касании — к границе слова, часто тоже в начало.
+  // Клик мышью прямо по цифрам не трогаем: курсор встаёт туда, куда кликнули.
+  function caretToEnd(input) {
+    function apply() {
+      if (document.activeElement === input) input.setSelectionRange(input.value.length, input.value.length);
     }
+    apply();
+    setTimeout(apply, 0);
+  }
+
+  var tapFocus = null;
+  root.addEventListener('pointerdown', function (e) {
+    var t = e.target;
+    var unfocusedInput = t.classList && t.classList.contains('ep-input') && t !== document.activeElement;
+    tapFocus = unfocusedInput && e.pointerType !== 'mouse' ? t : null;
+  });
+
+  root.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.tagName === 'INPUT') {
+      if (t === tapFocus) caretToEnd(t);
+      tapFocus = null;
+      return;
+    }
+    var control = t.closest && t.closest('.ep-control');
+    var label = !control && t.closest && t.closest('label.ep-label');
+    var input = control ? control.querySelector('input') : label ? document.getElementById(label.htmlFor) : null;
+    if (!input) return;
+    if (label) e.preventDefault();
+    input.focus();
+    caretToEnd(input);
   });
 
   // Подсказки на телефоне свёрнуты под «Как это считается?».
