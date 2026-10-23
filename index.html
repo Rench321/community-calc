@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Экономика автора сообщества — EdPlace</title>
+<meta name="description" content="Калькулятор дохода автора платного сообщества на EdPlace x КлабХаб: выручка, расходы на платформу и итоговый доход.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
+
+<!-- Обёртка страницы самого файла. При встраивании на чужой сайт этот блок не нужен. -->
+<style>
+  html, body { margin: 0; padding: 0; background: #F6F6F8; }
+</style>
+
+<!-- Стили калькулятора: всё под .ep-calc -->
+<style>
+  .ep-calc {
+    --ep-bg: #F6F6F8;
+    --ep-card: #FFFFFF;
+    --ep-text: #170D02;
+    --ep-muted: #686B73;
+    --ep-accent: #FA9B28;
+    --ep-soft-bg: #FFF5EA;
+    --ep-soft-text: #8C5200;
+    --ep-pos: #237804;
+    --ep-pos-bg: #F6FFED;
+    --ep-neg: #C4320A;
+    --ep-neg-bg: #FFF2EE;
+    --ep-border: #D9D9D9;
+    --ep-line: #E5E5E5;
+
+    color-scheme: light;
+    background: var(--ep-bg);
+    color: var(--ep-text);
+    font-family: Onest, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    padding: 40px 24px 56px;
+  }
+  .ep-calc *, .ep-calc *::before, .ep-calc *::after { box-sizing: border-box; }
+  .ep-calc h1, .ep-calc h2, .ep-calc p { margin: 0; }
+  .ep-calc button, .ep-calc input { font: inherit; color: inherit; margin: 0; }
+  .ep-calc button { -webkit-tap-highlight-color: transparent; }
+
+  .ep-calc .ep-wrap { max-width: 1200px; margin: 0 auto; }
+
+  /* Шапка */
+  .ep-calc .ep-head { margin-bottom: 28px; }
+  .ep-calc .ep-title {
+    font-size: 38px;
+    line-height: 44px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  .ep-calc .ep-subtitle {
+    margin-top: 10px;
+    color: var(--ep-muted);
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .ep-calc :focus-visible { outline: 2px solid var(--ep-accent); outline-offset: 2px; }
+  .ep-calc [tabindex="-1"]:focus { outline: none; }
+
+  /* Сетка: карточки слева, результат справа */
+  .ep-calc .ep-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .ep-calc .ep-main { display: grid; gap: 16px; min-width: 0; }
+  .ep-calc .ep-side { min-width: 0; }
+
+  /* Карточки */
+  .ep-calc .ep-card {
+    min-width: 0;
+    padding: 24px;
+    border-radius: 16px;
+    background: var(--ep-card);
+  }
+  .ep-calc .ep-card__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  .ep-calc .ep-step {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: var(--ep-soft-bg);
+    color: var(--ep-soft-text);
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .ep-calc .ep-card__title {
+    min-width: 0;
+    font-size: 20px;
+    line-height: 26px;
+    font-weight: 700;
+  }
+
+  /* Поля */
+  .ep-calc .ep-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .ep-calc .ep-grid--calc {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ep-line);
+  }
+  .ep-calc .ep-field { display: flex; flex-direction: column; min-width: 0; }
+  .ep-calc .ep-label {
+    flex: 1 0 auto;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 500;
+    overflow-wrap: break-word;
+  }
+  .ep-calc .ep-control {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding-right: 14px;
+    border: 1px solid var(--ep-border);
+    border-radius: 10px;
+    background: var(--ep-card);
+    cursor: text;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .ep-calc .ep-control:hover { border-color: #BFBFBF; }
+  .ep-calc .ep-control:focus-within {
+    border-color: var(--ep-accent);
+    box-shadow: 0 0 0 3px rgba(250, 155, 40, .25);
+  }
+  .ep-calc .ep-input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    padding: 0 8px 0 14px;
+    border: 0;
+    border-radius: 10px;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .ep-calc .ep-input:focus-visible { outline: none; }
+  .ep-calc .ep-input::placeholder { color: #9A9CA3; opacity: 1; }
+  .ep-calc .ep-unit {
+    flex: none;
+    color: var(--ep-muted);
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .ep-calc .ep-field.is-invalid .ep-control,
+  .ep-calc .ep-field.is-invalid .ep-control:focus-within {
+    border-color: var(--ep-neg);
+    box-shadow: 0 0 0 1px var(--ep-neg);
+  }
+  .ep-calc .ep-error {
+    margin-top: 6px;
+    color: var(--ep-neg);
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .ep-calc .ep-error:empty { display: none; }
+
+  /* Расчётные поля: серый фон, только чтение */
+  .ep-calc .ep-out {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--ep-bg);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* Подсказки */
+  .ep-calc .ep-hint { margin-top: 20px; }
+  .ep-calc .ep-hint__toggle { display: none; }
+  .ep-calc .ep-hint__body {
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--ep-soft-bg);
+    font-size: 14px;
+    line-height: 21px;
+  }
+  .ep-calc .ep-hint__body p + p { margin-top: 8px; }
+
+  /* Результат */
+  .ep-calc .ep-result .ep-card__head { margin-bottom: 6px; }
+  .ep-calc .ep-result__meta {
+    margin: 0 0 16px 44px;
+    color: var(--ep-muted);
+    font-size: 14px;
+    line-height: 20px;
+    overflow-wrap: anywhere;
+  }
+  .ep-calc .ep-result__meta:empty { display: none; }
+  .ep-calc .ep-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ep-line);
+  }
+  .ep-calc .ep-row:first-child { padding-top: 0; }
+  .ep-calc .ep-row__label { min-width: 0; color: var(--ep-muted); font-size: 15px; line-height: 20px; }
+  .ep-calc .ep-row__value {
+    flex: none;
+    max-width: 60%;
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .ep-calc .ep-total {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    background: var(--ep-pos-bg);
+  }
+  .ep-calc .ep-total__label { display: block; font-size: 15px; line-height: 20px; font-weight: 600; }
+  .ep-calc .ep-total__value {
+    display: block;
+    margin-top: 6px;
+    color: var(--ep-pos);
+    font-size: 36px;
+    line-height: 42px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .ep-calc .ep-total.is-neg { background: var(--ep-neg-bg); }
+  .ep-calc .ep-total.is-neg .ep-total__value { color: var(--ep-neg); }
+  .ep-calc .ep-total.is-empty { background: var(--ep-bg); }
+  .ep-calc .ep-total.is-empty .ep-total__value { color: var(--ep-muted); }
+
+  /* Плашка с итогом на телефоне */
+  .ep-calc .ep-bar { display: none; }
+  .ep-calc .ep-bar[hidden] { display: none !important; }
+
+  .ep-calc .ep-noscript {
+    max-width: 1200px;
+    margin: 0 auto 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: var(--ep-neg-bg);
+    color: var(--ep-neg);
+  }
+
+  /* Планшет и компьютер: поля в две колонки */
+  @media (min-width: 768px) {
+    .ep-calc .ep-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+  }
+
+  /* Компьютер: результат справа и прилипает при прокрутке */
+  @media (min-width: 1024px) {
+    .ep-calc .ep-layout {
+      grid-template-columns: minmax(0, 1fr) 360px;
+      gap: 24px;
+      align-items: start;
+    }
+    .ep-calc .ep-side { position: -webkit-sticky; position: sticky; top: 24px; }
+  }
+
+  /* Телефон */
+  @media (max-width: 767.98px) {
+    .ep-calc { padding: 24px 16px 40px; }
+    .ep-calc .ep-head { margin-bottom: 20px; }
+    .ep-calc .ep-title { font-size: 28px; line-height: 34px; }
+    .ep-calc .ep-subtitle { margin-top: 8px; font-size: 16px; line-height: 24px; }
+    .ep-calc .ep-main { gap: 12px; }
+    .ep-calc .ep-layout { gap: 12px; }
+    .ep-calc .ep-card { padding: 20px 16px; }
+    .ep-calc .ep-card__title { font-size: 18px; line-height: 24px; }
+    .ep-calc .ep-total__value { font-size: 30px; line-height: 36px; }
+
+    .ep-calc .ep-hint { margin-top: 12px; }
+    .ep-calc .ep-hint__toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 44px;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--ep-soft-text);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .ep-calc .ep-hint__toggle svg { transition: transform .2s; }
+    .ep-calc .ep-hint__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .ep-calc .ep-hint:not(.is-open) .ep-hint__body { display: none; }
+
+    .ep-calc .ep-bar {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      min-height: 60px;
+      padding: 10px 16px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      border: 0;
+      border-top: 1px solid var(--ep-line);
+      background: var(--ep-card);
+      box-shadow: 0 -6px 20px rgba(23, 13, 2, .08);
+      text-align: left;
+      cursor: pointer;
+    }
+    .ep-calc .ep-bar__text { min-width: 0; font-size: 15px; line-height: 20px; font-weight: 500; }
+    .ep-calc .ep-bar__value {
+      color: var(--ep-pos);
+      font-size: 18px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .ep-calc .ep-bar.is-neg .ep-bar__value { color: var(--ep-neg); }
+    .ep-calc .ep-bar.is-empty .ep-bar__value { color: var(--ep-muted); }
+    .ep-calc .ep-bar__icon {
+      flex: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: var(--ep-soft-bg);
+      color: var(--ep-soft-text);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ep-calc *, .ep-calc *::before, .ep-calc *::after { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ep-calc" id="ep-calc">
+  <noscript><div class="ep-noscript">Для работы калькулятора включите JavaScript в браузере.</div></noscript>
+
+  <div class="ep-wrap">
+    <header class="ep-head">
+      <h1 class="ep-title">Экономика по продукту «Сообщество» автора сообществ</h1>
+      <p class="ep-subtitle">Замените примеры цифр на свои</p>
+    </header>
+
+    <div class="ep-layout">
+      <div class="ep-main">
+
+        <!-- 1. Период расчёта -->
+        <section class="ep-card" aria-labelledby="ep-s1">
+          <div class="ep-card__head">
+            <span class="ep-step" aria-hidden="true">1</span>
+            <h2 class="ep-card__title" id="ep-s1">Период расчёта</h2>
+          </div>
+          <div class="ep-grid">
+            <div class="ep-field">
+              <label class="ep-label" for="ep-B">Период расчёта,&nbsp;месяцев</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-B" data-id="B" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-B-err">
+                <span class="ep-unit" aria-hidden="true">мес.</span>
+              </div>
+              <p class="ep-error" id="ep-B-err"></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Платный клуб -->
+        <section class="ep-card" aria-labelledby="ep-s2">
+          <div class="ep-card__head">
+            <span class="ep-step" aria-hidden="true">2</span>
+            <h2 class="ep-card__title" id="ep-s2">Платный клуб: доход с текущей базы</h2>
+          </div>
+          <div class="ep-grid">
+            <div class="ep-field">
+              <label class="ep-label" for="ep-C">Размер доступной базы,&nbsp;чел.</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-C" data-id="C" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-C-err">
+                <span class="ep-unit" aria-hidden="true">чел.</span>
+              </div>
+              <p class="ep-error" id="ep-C-err"></p>
+            </div>
+            <div class="ep-field">
+              <label class="ep-label" for="ep-D">Конверсия базы в платный клуб,&nbsp;%</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-D" data-id="D" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-D-err">
+                <span class="ep-unit" aria-hidden="true">%</span>
+              </div>
+              <p class="ep-error" id="ep-D-err"></p>
+            </div>
+            <div class="ep-field">
+              <label class="ep-label" for="ep-F">Цена участия в клубе,&nbsp;₽/мес.</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-F" data-id="F" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-F-err">
+                <span class="ep-unit" aria-hidden="true">₽</span>
+              </div>
+              <p class="ep-error" id="ep-F-err"></p>
+            </div>
+            <div class="ep-field">
+              <label class="ep-label" for="ep-G">Среднее число оплаченных месяцев участия в периоде</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-G" data-id="G" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-G-err">
+                <span class="ep-unit" aria-hidden="true">мес.</span>
+              </div>
+              <p class="ep-error" id="ep-G-err"></p>
+            </div>
+          </div>
+          <div class="ep-grid ep-grid--calc">
+            <div class="ep-field">
+              <span class="ep-label">Платящих участников из базы,&nbsp;чел.</span>
+              <div class="ep-out" data-out="E">—</div>
+            </div>
+            <div class="ep-field">
+              <span class="ep-label">Выручка от подписок текущей базы,&nbsp;₽</span>
+              <div class="ep-out" data-out="H">—</div>
+            </div>
+          </div>
+          <div class="ep-hint">
+            <button class="ep-hint__toggle" type="button" aria-expanded="false" aria-controls="ep-hint-2">
+              Как это считается?
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="ep-hint__body" id="ep-hint-2">
+              <p>Берём вашу текущую базу (например, 2&nbsp;000 чел.), переводим её часть в платящих участников через процент конверсии (например, 10% = 200 чел.) и умножаем на стоимость и длительность подписки.</p>
+              <p>Это ваш фундамент выручки ещё до привлечения нового трафика.</p>
+              <p>Подставьте в поля актуальные для вас числа.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. Рекомендации -->
+        <section class="ep-card" aria-labelledby="ep-s3">
+          <div class="ep-card__head">
+            <span class="ep-step" aria-hidden="true">3</span>
+            <h2 class="ep-card__title" id="ep-s3">Дополнительный доход по рекомендациям</h2>
+          </div>
+          <div class="ep-grid">
+            <div class="ep-field">
+              <label class="ep-label" for="ep-J">Новых платящих по рекомендациям, % от участников из базы</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-J" data-id="J" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-J-err">
+                <span class="ep-unit" aria-hidden="true">%</span>
+              </div>
+              <p class="ep-error" id="ep-J-err"></p>
+            </div>
+            <div class="ep-field">
+              <label class="ep-label" for="ep-L">Среднее число оплаченных месяцев новичками в периоде</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-L" data-id="L" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-L-err">
+                <span class="ep-unit" aria-hidden="true">мес.</span>
+              </div>
+              <p class="ep-error" id="ep-L-err"></p>
+            </div>
+          </div>
+          <div class="ep-grid ep-grid--calc">
+            <div class="ep-field">
+              <span class="ep-label">Новых платящих по рекомендациям,&nbsp;чел.</span>
+              <div class="ep-out" data-out="K">—</div>
+            </div>
+            <div class="ep-field">
+              <span class="ep-label">Дополнительная выручка от рекомендаций,&nbsp;₽</span>
+              <div class="ep-out" data-out="M">—</div>
+            </div>
+          </div>
+          <div class="ep-hint">
+            <button class="ep-hint__toggle" type="button" aria-expanded="false" aria-controls="ep-hint-3">
+              Как это считается?
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="ep-hint__body" id="ep-hint-3">
+              <p>Оценивается эффект от запуска реферальной программы.</p>
+              <p>Укажите процент участников, которые порекомендуют ваше сообщество друзьям, и сколько месяцев новички будут платить (в среднем 3–6 месяцев, рекомендуем оставить цифру по умолчанию).</p>
+              <p>Модель сама рассчитает прирост в людях и дополнительную выручку.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. Мероприятия -->
+        <section class="ep-card" aria-labelledby="ep-s4">
+          <div class="ep-card__head">
+            <span class="ep-step" aria-hidden="true">4</span>
+            <h2 class="ep-card__title" id="ep-s4">Платные мероприятия / продукты автора сообщества</h2>
+          </div>
+          <div class="ep-grid">
+            <div class="ep-field">
+              <label class="ep-label" for="ep-O">Платных мероприятий в месяц</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-O" data-id="O" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-O-err">
+                <span class="ep-unit" aria-hidden="true">шт.</span>
+              </div>
+              <p class="ep-error" id="ep-O-err"></p>
+            </div>
+            <div class="ep-field">
+              <label class="ep-label" for="ep-P">Средняя цена билета,&nbsp;₽</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-P" data-id="P" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-P-err">
+                <span class="ep-unit" aria-hidden="true">₽</span>
+              </div>
+              <p class="ep-error" id="ep-P-err"></p>
+            </div>
+            <div class="ep-field">
+              <label class="ep-label" for="ep-Q">Доля участников, покупающих билет на одно мероприятие,&nbsp;%</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-Q" data-id="Q" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-Q-err">
+                <span class="ep-unit" aria-hidden="true">%</span>
+              </div>
+              <p class="ep-error" id="ep-Q-err"></p>
+            </div>
+          </div>
+          <div class="ep-grid ep-grid--calc">
+            <div class="ep-field">
+              <span class="ep-label" data-label="R">Оплаченных билетов за период,&nbsp;шт.</span>
+              <div class="ep-out" data-out="R">—</div>
+            </div>
+            <div class="ep-field">
+              <span class="ep-label" data-label="S">Выручка от мероприятий за период,&nbsp;₽</span>
+              <div class="ep-out" data-out="S">—</div>
+            </div>
+          </div>
+          <div class="ep-hint">
+            <button class="ep-hint__toggle" type="button" aria-expanded="false" aria-controls="ep-hint-4">
+              Как это считается?
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="ep-hint__body" id="ep-hint-4">
+              <p>Доход от доп. продаж внутри сообщества. Планируете продавать гайды, шаблоны или курсы внутри сообщества? Просто внесите их количество и средний чек в поля выше.</p>
+              <p>Система сама рассчитает долю покупателей и прибавит доход к общей выручке.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. Расходы на EdPlace -->
+        <section class="ep-card" aria-labelledby="ep-s5">
+          <div class="ep-card__head">
+            <span class="ep-step" aria-hidden="true">5</span>
+            <h2 class="ep-card__title" id="ep-s5">Расходы автора на EdPlace x КлабХаб</h2>
+          </div>
+          <div class="ep-grid">
+            <div class="ep-field">
+              <label class="ep-label" for="ep-Y">Абонентская плата EdPlace,&nbsp;₽/мес.</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-Y" data-id="Y" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-Y-err">
+                <span class="ep-unit" aria-hidden="true">₽</span>
+              </div>
+              <p class="ep-error" id="ep-Y-err"></p>
+            </div>
+            <div class="ep-field">
+              <label class="ep-label" for="ep-AA">Комиссия EdPlace с транзакций,&nbsp;%</label>
+              <div class="ep-control">
+                <input class="ep-input" id="ep-AA" data-id="AA" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-describedby="ep-AA-err">
+                <span class="ep-unit" aria-hidden="true">%</span>
+              </div>
+              <p class="ep-error" id="ep-AA-err"></p>
+            </div>
+          </div>
+          <div class="ep-grid ep-grid--calc">
+            <div class="ep-field">
+              <span class="ep-label">Абонентская плата за весь период,&nbsp;₽</span>
+              <div class="ep-out" data-out="Z">—</div>
+            </div>
+            <div class="ep-field">
+              <span class="ep-label">Комиссия EdPlace за период,&nbsp;₽</span>
+              <div class="ep-out" data-out="AC">—</div>
+            </div>
+          </div>
+          <div class="ep-hint">
+            <button class="ep-hint__toggle" type="button" aria-expanded="false" aria-controls="ep-hint-5">
+              Как это считается?
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="ep-hint__body" id="ep-hint-5">
+              <p>Стоимость инфраструктуры EdPlace x КлабХаб. Здесь автоматически рассчитываются расходы на платформу (подписка + комиссия).</p>
+              <p>В платформе всё уже настроено и включено в модель, чтобы избавить вас от трат на технических специалистов, менеджеров и личных затрат времени на развитие платформы (если хотели свой продукт сделать) или механик вовлечённости.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- 6. Результат -->
+      <aside class="ep-side">
+        <section class="ep-card ep-result" id="ep-result" aria-labelledby="ep-s6">
+          <div class="ep-card__head">
+            <span class="ep-step" aria-hidden="true">6</span>
+            <h2 class="ep-card__title" id="ep-s6" tabindex="-1">Результат для автора сообщества</h2>
+          </div>
+          <p class="ep-result__meta" data-meta></p>
+          <div aria-live="polite">
+            <div class="ep-row">
+              <span class="ep-row__label">Вся выручка автора,&nbsp;₽</span>
+              <span class="ep-row__value" data-out="AE">—</span>
+            </div>
+            <div class="ep-row">
+              <span class="ep-row__label">Всего расходов на EdPlace,&nbsp;₽</span>
+              <span class="ep-row__value" data-out="AF">—</span>
+            </div>
+            <div class="ep-total is-empty" data-total>
+              <span class="ep-total__label">Доход автора после оплаты EdPlace,&nbsp;₽</span>
+              <span class="ep-total__value" data-out="AG">—</span>
+            </div>
+          </div>
+          <div class="ep-hint">
+            <button class="ep-hint__toggle" type="button" aria-expanded="false" aria-controls="ep-hint-6">
+              Как это считается?
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="ep-hint__body" id="ep-hint-6">
+              <p>Итоговая прибыль автора сообщества через EdPlace x КлабХаб.</p>
+              <p>Здесь автоматически собирается вся выручка, вычитаются расходы на EdPlace x КлабХаб и показывается главный результат: сколько денег останется у вас на руках.</p>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <button class="ep-bar is-empty" type="button" data-bar hidden>
+    <span class="ep-bar__text">Доход автора: <span class="ep-bar__value" data-bar-value>—</span></span>
+    <span class="ep-bar__icon" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+    </span>
+  </button>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var root = document.getElementById('ep-calc');
+  if (!root) return;
+
+  // Поля ввода. Значения по умолчанию — пример из таблицы, период — 6 мес.
+  // Проценты вводятся как проценты (10 = 10%), в формулах делятся на 100.
+  var FIELDS = {
+    B:  { def: 6,    min: 1 },
+    C:  { def: 2000, min: 0, int: true },
+    D:  { def: 10,   min: 0, max: 100, pct: true },
+    F:  { def: 1500, min: 0 },
+    G:  { def: 6,    min: 0, upToPeriod: true },
+    J:  { def: 1,    min: 0, max: 1000, pct: true },
+    L:  { def: 3,    min: 0, upToPeriod: true },
+    O:  { def: 2,    min: 0 },
+    P:  { def: 2000, min: 0 },
+    Q:  { def: 15,   min: 0, max: 100, pct: true },
+    Y:  { def: 5900, min: 0 },
+    AA: { def: 10,   min: 0, max: 100, pct: true }
+  };
+  var IDS = Object.keys(FIELDS);
+
+  // ---------- Расчёт: формулы строго как в таблице, лист «Комьюнити-продукт» ----------
+
+  // ROUND из таблицы: до целого, половина от нуля. toPrecision убирает шум
+  // двоичной арифметики (2.4999999999999996 → 2.5), как это делают таблицы.
+  function round(x) {
+    var n = Number(Math.abs(x).toPrecision(15));
+    return (x < 0 ? -1 : 1) * Math.round(n);
+  }
+
+  function pct(x) { return x / 100; }
+
+  function ok() {
+    for (var i = 0; i < arguments.length; i++) {
+      if (typeof arguments[i] !== 'number' || !isFinite(arguments[i])) return false;
+    }
+    return true;
+  }
+
+  // inputs: { B, C, D, F, G, J, L, O, P, Q, Y, AA } — числа или null (ошибка ввода).
+  // Результат, который нельзя посчитать из-за ошибки во вводе, — null.
+  function calc(i) {
+    var r = {};
+    r.E = ok(i.C, i.D) ? round(i.C * pct(i.D)) : null;                              // E6
+    r.H = ok(r.E, i.F, i.G) ? r.E * i.F * i.G : null;                                // H6
+    r.K = ok(r.E, i.J) ? round(r.E * pct(i.J)) : null;                               // K6
+    r.M = ok(r.K, i.F, i.L) ? r.K * i.F * i.L : null;                                // M6
+    r.R = ok(r.E, i.G, i.B, r.K, i.L, i.O, i.Q)                                      // R6
+      ? round((r.E * Math.min(i.G, i.B) + r.K * Math.min(i.L, i.B)) * i.O * pct(i.Q))
+      : null;
+    r.S = ok(i.P, r.R) ? i.P * r.R : null;                                           // S6
+    r.Z = ok(i.Y, i.G) ? i.Y * i.G : null;                                           // Z6 = Y·G, как в таблице
+    r.AE = ok(r.H, r.M, r.S) ? r.H + r.M + r.S : null;                               // AE6 («Другие продажи» W = 0)
+    r.AC = ok(r.AE, i.AA) ? r.AE * pct(i.AA) : null;                                 // AC6 = (H+M+S)·AA
+    r.AF = ok(r.Z, r.AC) ? r.Z + r.AC : null;                                        // AF6
+    r.AG = ok(r.AE, r.AF) ? r.AE - r.AF : null;                                      // AG6
+    return r;
+  }
+
+  // ---------- Ввод и проверка ----------
+
+  // Пробелы игнорируются, запятая и точка — десятичный разделитель.
+  function normalize(raw) {
+    return String(raw)
+      .replace(/\s+/g, '')
+      .replace(/[%₽]/g, '')
+      .replace(/−/g, '-')
+      .replace(',', '.');
+  }
+
+  function parseNumber(raw) {
+    var s = normalize(raw);
+    if (s === '') return { empty: true };
+    if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return { nan: true };
+    var v = parseFloat(s);
+    if (!isFinite(v)) return { nan: true };
+    return { value: v, text: s };
+  }
+
+  function validate(raw) {
+    var values = {};
+    var errors = {};
+    IDS.forEach(function (id) {
+      var f = FIELDS[id];
+      var p = parseNumber(raw[id]);
+      var err = '';
+      if (p.empty) err = 'Заполните поле';
+      else if (p.nan) err = 'Введите число';
+      else if (f.int && Math.floor(p.value) !== p.value) err = 'Только целое число';
+      else if (p.value < f.min) err = f.min === 1 ? 'Не меньше 1 мес.' : 'Не меньше 0';
+      else if (f.max != null && p.value > f.max) err = 'Не больше ' + fmtNum(f.max) + '%';
+      values[id] = err ? null : p.value;
+      if (err) errors[id] = err;
+    });
+    // G и L не больше периода — как проверка данных в таблице. Молча не исправляем.
+    if (values.B != null) {
+      ['G', 'L'].forEach(function (id) {
+        if (values[id] != null && values[id] > values.B) {
+          errors[id] = 'Не больше периода (' + fmtNum(values.B) + ' мес.)';
+          values[id] = null;
+        }
+      });
+    }
+    return { values: values, errors: errors };
+  }
+
+  // ---------- Форматы ----------
+
+  var nfInt = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0 });
+  var nfNum = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 6 });
+
+  function fmtNum(v) { return nfNum.format(v); }
+
+  // Деньги, люди, штуки: целые с разделителями. Ноль и «не посчитать» — «—».
+  function fmtValue(v, unit) {
+    if (v == null) return '—';
+    var n = round(v);
+    if (n === 0) return '—';
+    return (n < 0 ? '−' : '') + nfInt.format(Math.abs(n)) + ' ' + unit;
+  }
+
+  // Число в поле после потери фокуса: «2000» → «2 000», «7.5» → «7,5».
+  // Дробную часть оставляем как ввёл пользователь, чтобы не потерять знаки.
+  function fmtInput(text) {
+    var neg = text.charAt(0) === '-';
+    var parts = text.replace(/^[-+]/, '').split('.');
+    var int = parts[0].replace(/^0+(?=\d)/, '') || '0';
+    int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+    var frac = parts[1] || '';
+    return (neg ? '-' : '') + int + (frac ? ',' + frac : '');
+  }
+
+  // ---------- Интерфейс ----------
+
+  var inputs = {};
+  IDS.forEach(function (id) { inputs[id] = root.querySelector('[data-id="' + id + '"]'); });
+  var outs = {};
+  Array.prototype.forEach.call(root.querySelectorAll('[data-out]'), function (el) {
+    outs[el.getAttribute('data-out')] = el;
+  });
+  var labelR = root.querySelector('[data-label="R"]');
+  var labelS = root.querySelector('[data-label="S"]');
+  var meta = root.querySelector('[data-meta]');
+  var total = root.querySelector('[data-total]');
+  var bar = root.querySelector('[data-bar]');
+  var barValue = root.querySelector('[data-bar-value]');
+  var result = root.querySelector('#ep-result');
+  var resultTitle = root.querySelector('#ep-s6');
+  var main = root.querySelector('.ep-main');
+
+  var UNITS = { E: 'чел.', K: 'чел.', R: 'шт.' };
+
+  function setText(el, text) { if (el && el.textContent !== text) el.textContent = text; }
+
+  function readRaw() {
+    var raw = {};
+    IDS.forEach(function (id) { raw[id] = inputs[id].value; });
+    return raw;
+  }
+
+  function showErrors(errors) {
+    IDS.forEach(function (id) {
+      var input = inputs[id];
+      var field = input.closest('.ep-field');
+      var msg = errors[id] || '';
+      field.classList.toggle('is-invalid', !!msg);
+      if (msg) input.setAttribute('aria-invalid', 'true');
+      else input.removeAttribute('aria-invalid');
+      setText(document.getElementById(input.getAttribute('aria-describedby')), msg);
+    });
+  }
+
+  function setState(el, n) {
+    el.classList.toggle('is-neg', n != null && n < 0);
+    el.classList.toggle('is-empty', n == null || n === 0);
+  }
+
+  function update() {
+    var v = validate(readRaw());
+    showErrors(v.errors);
+    var r = calc(v.values);
+
+    Object.keys(outs).forEach(function (key) {
+      setText(outs[key], fmtValue(r[key], UNITS[key] || '₽'));
+    });
+
+    // В таблице в заголовках R и S стоит «за 6 мес» — подставляем текущий период.
+    var period = v.values.B != null ? 'за ' + fmtNum(v.values.B) + ' мес.' : 'за период';
+    setText(labelR, 'Оплаченных билетов ' + period + ', шт.');
+    setText(labelS, 'Выручка от мероприятий ' + period + ', ₽');
+
+    setText(meta, v.values.B != null ? 'Период расчёта: ' + fmtNum(v.values.B) + ' мес.' : '');
+
+    var ag = r.AG == null ? null : round(r.AG);
+    setState(total, ag);
+    setState(bar, ag);
+    setText(barValue, fmtValue(r.AG, '₽'));
+  }
+
+  function fillDefaults() {
+    IDS.forEach(function (id) { inputs[id].value = fmtInput(String(FIELDS[id].def)); });
+  }
+
+  root.addEventListener('input', function (e) {
+    if (e.target.classList && e.target.classList.contains('ep-input')) update();
+  });
+
+  // После ввода показываем число с разделителями тысяч.
+  root.addEventListener('focusout', function (e) {
+    var input = e.target;
+    if (!input.getAttribute || !input.getAttribute('data-id')) return;
+    var p = parseNumber(input.value);
+    if (p.value != null) {
+      var text = fmtInput(p.text);
+      if (text !== input.value) input.value = text;
+    }
+  });
+
+  // Клик по единице измерения рядом с полем ставит курсор в поле.
+  root.addEventListener('click', function (e) {
+    var control = e.target.closest && e.target.closest('.ep-control');
+    if (control && e.target.tagName !== 'INPUT') {
+      var input = control.querySelector('input');
+      if (input) input.focus();
+    }
+  });
+
+  // Подсказки на телефоне свёрнуты под «Как это считается?».
+  Array.prototype.forEach.call(root.querySelectorAll('.ep-hint__toggle'), function (btn) {
+    btn.addEventListener('click', function () {
+      var hint = btn.closest('.ep-hint');
+      var open = !hint.classList.contains('is-open');
+      hint.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+
+  // Плашка с итогом на телефоне: видна, пока калькулятор на экране, а блок «Результат» — нет.
+  var mq = window.matchMedia('(max-width: 767.98px)');
+  var resultVisible = false;
+  var mainVisible = true;
+  function updateBar() { bar.hidden = !(mq.matches && mainVisible && !resultVisible); }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (entries) {
+      resultVisible = entries[entries.length - 1].isIntersecting;
+      updateBar();
+    }, { rootMargin: '0px 0px -72px 0px' }).observe(result);
+    new IntersectionObserver(function (entries) {
+      mainVisible = entries[entries.length - 1].isIntersecting;
+      updateBar();
+    }).observe(main);
+  }
+  if (mq.addEventListener) mq.addEventListener('change', updateBar);
+  else if (mq.addListener) mq.addListener(updateBar);
+  updateBar();
+
+  bar.addEventListener('click', function () {
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    result.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    resultTitle.focus({ preventScroll: true });
+  });
+
+  fillDefaults();
+  update();
+
+  // ---------- Проверка формул: откройте страницу с ?test ----------
+
+  function runTests() {
+    var failed = 0;
+    function check(cond, msg) {
+      console.assert(cond, '[ep-calc] ' + msg);
+      if (!cond) failed++;
+    }
+    var cases = [
+      {
+        name: 'пример 1 (по умолчанию)',
+        input: { B: 6, C: 2000, D: 10, F: 1500, G: 6, J: 1, L: 3, O: 2, P: 2000, Q: 15, Y: 5900, AA: 10 },
+        expect: { E: 200, H: 1800000, K: 2, M: 9000, R: 362, S: 724000, Z: 35400, AC: 253300, AE: 2533000, AF: 288700, AG: 2244300 }
+      },
+      {
+        name: 'пример 2',
+        input: { B: 12, C: 1500, D: 7, F: 990, G: 5, J: 3, L: 2, O: 1, P: 1500, Q: 20, Y: 5900, AA: 10 },
+        expect: { E: 105, H: 519750, K: 3, M: 5940, R: 106, S: 159000, Z: 29500, AC: 68469, AE: 684690, AF: 97969, AG: 586721 }
+      },
+      {
+        name: 'пример 3 (минус)',
+        input: { B: 6, C: 100, D: 5, F: 500, G: 2, J: 0, L: 0, O: 0, P: 0, Q: 0, Y: 5900, AA: 10 },
+        expect: { E: 5, H: 5000, K: 0, M: 0, R: 0, S: 0, Z: 11800, AC: 500, AE: 5000, AF: 12300, AG: -7300 }
+      }
+    ];
+    cases.forEach(function (c) {
+      var r = calc(c.input);
+      Object.keys(c.expect).forEach(function (k) {
+        var got = r[k] == null ? null : round(r[k]);
+        check(got === c.expect[k], c.name + ': ' + k + ' = ' + got + ', ожидалось ' + c.expect[k]);
+      });
+    });
+
+    // Округление половины вверх: 25 · 10% = 2,5 → 3.
+    check(calc({ C: 25, D: 10 }).E === 3, 'ROUND(2,5) = 3');
+
+    // Ввод.
+    check(parseNumber('2 000').value === 2000, 'пробелы в числе');
+    check(parseNumber('7,5').value === 7.5, 'запятая');
+    check(parseNumber('7.5').value === 7.5, 'точка');
+    check(parseNumber('').empty === true, 'пустое поле');
+    check(parseNumber('abc').nan === true, 'буквы');
+
+    var base = {};
+    IDS.forEach(function (id) { base[id] = String(FIELDS[id].def); });
+    function errorsFor(patch) {
+      var raw = Object.assign({}, base, patch);
+      return validate(raw).errors;
+    }
+    check(!Object.keys(errorsFor({})).length, 'пример по умолчанию без ошибок');
+    check(errorsFor({ C: '' }).C === 'Заполните поле', 'пустое C');
+    check(errorsFor({ D: 'abc' }).D === 'Введите число', 'буквы в D');
+    check(errorsFor({ D: '150' }).D === 'Не больше 100%', '150% в конверсии');
+    check(errorsFor({ G: '7' }).G === 'Не больше периода (6 мес.)', 'G больше B');
+    check(errorsFor({ B: '4' }).L === undefined && errorsFor({ B: '4' }).G !== undefined, 'B уменьшили: ошибка в G, L в порядке');
+    check(errorsFor({ C: '2,5' }).C === 'Только целое число', 'дробное C');
+    check(errorsFor({ J: '1000' }).J === undefined && errorsFor({ J: '1001' }).J !== undefined, 'J до 1000%');
+    check(errorsFor({ B: '0' }).B === 'Не меньше 1 мес.', 'B меньше 1');
+    check(errorsFor({ F: '0', O: '0' }).F === undefined, 'ноль допустим');
+
+    root.setAttribute('data-tests', failed ? 'failed:' + failed : 'passed');
+    if (failed) console.error('[ep-calc] проверок не прошло: ' + failed);
+    else console.info('[ep-calc] все проверки пройдены');
+  }
+
+  if (/[?&]test(=|&|$)/.test(window.location.search)) runTests();
+})();
+</script>
+</body>
+</html>
