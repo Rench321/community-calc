@@ -900,10 +900,22 @@
   });
 
   // Плашка с итогом на телефоне: видна, пока калькулятор на экране, а блок «Результат» — нет.
+  // Пока поле в фокусе, плашка скрыта: клавиатура сжимает только видимую область,
+  // и fixed-плашка оказывается под клавиатурой и прыгает при прокрутке.
   var mq = window.matchMedia('(max-width: 767.98px)');
   var resultVisible = false;
   var mainVisible = true;
-  function updateBar() { bar.hidden = !(mq.matches && mainVisible && !resultVisible); }
+  var typing = false;
+  function updateBar() { bar.hidden = !(mq.matches && mainVisible && !resultVisible && !typing); }
+
+  function updateTyping() {
+    var el = document.activeElement;
+    typing = !!(el && el.classList && el.classList.contains('ep-input') && root.contains(el));
+    updateBar();
+  }
+  root.addEventListener('focusin', updateTyping);
+  // При переходе к следующему полю focusin придёт сразу после focusout — ждём его, чтобы плашка не мигала.
+  root.addEventListener('focusout', function () { setTimeout(updateTyping, 0); });
 
   if ('IntersectionObserver' in window) {
     new IntersectionObserver(function (entries) {
