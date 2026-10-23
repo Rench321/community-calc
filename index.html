@@ -272,6 +272,16 @@
   /* Планшет и компьютер: поля в две колонки */
   @media (min-width: 768px) {
     .ep-calc .ep-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 20px; }
+
+    /* Подпись, поле и ошибка соседних полей — в общих строках сетки. Поля в ряду стоят на одном уровне
+       при подписях разной длины, а ошибка под одним полем не сдвигает соседнее.
+       Без subgrid (Safari до 16) — запасной вариант: подпись растягивается, ошибка сдвигает соседа. */
+    @supports (grid-template-rows: subgrid) {
+      .ep-calc .ep-grid { row-gap: 0; }
+      .ep-calc .ep-field { display: grid; grid-row: span 3; grid-template-rows: subgrid; }
+      .ep-calc .ep-field:nth-child(n+3) { margin-top: 16px; }
+      .ep-calc .ep-label { align-self: end; }
+    }
   }
 
   /* Компьютер: результат справа и прилипает при прокрутке */
