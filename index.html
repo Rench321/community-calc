@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Экономика автора сообщества — EdPlace</title>
-<meta name="description" content="Калькулятор дохода автора платного сообщества на EdPlace x КлабХаб: выручка, расходы на платформу и итоговый доход.">
+<title>Калькулятор дохода платного сообщества — КлабХаб x Edplace</title>
+<meta name="description" content="Калькулятор дохода автора платного сообщества на КлабХаб x Edplace: выручка, расходы на платформу и итоговый доход.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap">
@@ -22,10 +22,6 @@
     --ep-text: #170D02;
     --ep-muted: #686B73;
     --ep-accent: #FA9B28;
-    --ep-soft-bg: #FFF5EA;
-    --ep-soft-text: #8C5200;
-    --ep-pos: #237804;
-    --ep-pos-bg: #F6FFED;
     --ep-neg: #C4320A;
     --ep-neg-bg: #FFF2EE;
     --ep-border: #D9D9D9;
@@ -63,6 +59,7 @@
     font-size: 18px;
     line-height: 28px;
   }
+  .ep-calc .ep-subtitle--hint { margin-top: 4px; font-size: 16px; line-height: 24px; }
 
   .ep-calc :focus-visible { outline: 2px solid var(--ep-accent); outline-offset: 2px; }
 
@@ -75,13 +72,23 @@
   .ep-calc .ep-main { display: grid; gap: 16px; min-width: 0; }
   .ep-calc .ep-side { min-width: 0; }
 
-  /* Карточки */
+  /* Карточки. У каждого блока свой цвет: полоска сверху, номер, расчётные поля.
+     --tone — сам цвет, --tone-bg — светлый фон, --tone-text — текст на этом фоне (контраст от 4.5:1). */
   .ep-calc .ep-card {
+    --tone: #64748B;
+    --tone-bg: #F1F5F9;
+    --tone-text: #334155;
     min-width: 0;
     padding: 24px;
+    border-top: 4px solid var(--tone);
     border-radius: 16px;
     background: var(--ep-card);
   }
+  .ep-calc .ep-card--sub { --tone: #2F6FEB; --tone-bg: #EEF4FF; --tone-text: #1D4ED8; }
+  .ep-calc .ep-card--friends { --tone: #8B5CF6; --tone-bg: #F4F0FF; --tone-text: #5B21B6; }
+  .ep-calc .ep-card--extra { --tone: #13A89E; --tone-bg: #E8F8F6; --tone-text: #0F6B64; }
+  .ep-calc .ep-card--cost { --tone: #FA9B28; --tone-bg: #FFF5EA; --tone-text: #8C5200; }
+  .ep-calc .ep-result { --tone: #1A7F37; --tone-bg: #EAF7EE; --tone-text: #1A7F37; }
   .ep-calc .ep-card__head {
     display: flex;
     align-items: center;
@@ -96,8 +103,8 @@
     width: 32px;
     height: 32px;
     border-radius: 10px;
-    background: var(--ep-soft-bg);
-    color: var(--ep-soft-text);
+    background: var(--tone-bg);
+    color: var(--tone-text);
     font-size: 15px;
     font-weight: 700;
   }
@@ -182,15 +189,17 @@
   }
   .ep-calc .ep-error:empty { display: none; }
 
-  /* Расчётные поля: серый фон, только чтение */
+  /* Расчётные поля: в цвете блока, только чтение */
   .ep-calc .ep-out {
     display: flex;
     align-items: center;
     min-height: 48px;
     padding: 12px 14px;
     border-radius: 10px;
-    background: var(--ep-bg);
-    font-weight: 600;
+    background: var(--tone-bg);
+    box-shadow: inset 3px 0 0 var(--tone);
+    color: var(--tone-text);
+    font-weight: 700;
     font-variant-numeric: tabular-nums;
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -202,7 +211,7 @@
   .ep-calc .ep-hint__body {
     padding: 14px 16px;
     border-radius: 10px;
-    background: var(--ep-soft-bg);
+    background: var(--ep-bg);
     font-size: 14px;
     line-height: 21px;
   }
@@ -237,17 +246,19 @@
     overflow-wrap: anywhere;
     word-break: break-word;
   }
+  /* Итог: насыщенный зелёный цвет блока с белым текстом (контраст 5:1), минус — красный */
   .ep-calc .ep-total {
     margin-top: 16px;
-    padding: 16px;
+    padding: 18px 16px;
     border-radius: 12px;
-    background: var(--ep-pos-bg);
+    background: var(--tone);
+    color: #FFFFFF;
   }
   .ep-calc .ep-total__label { display: block; font-size: 15px; line-height: 20px; font-weight: 600; }
   .ep-calc .ep-total__value {
     display: block;
     margin-top: 6px;
-    color: var(--ep-pos);
+    color: #FFFFFF;
     font-size: 36px;
     line-height: 42px;
     font-weight: 800;
@@ -255,9 +266,8 @@
     overflow-wrap: anywhere;
     word-break: break-word;
   }
-  .ep-calc .ep-total.is-neg { background: var(--ep-neg-bg); }
-  .ep-calc .ep-total.is-neg .ep-total__value { color: var(--ep-neg); }
-  .ep-calc .ep-total.is-empty { background: var(--ep-bg); }
+  .ep-calc .ep-total.is-neg { background: var(--ep-neg); }
+  .ep-calc .ep-total.is-empty { background: var(--ep-bg); color: var(--ep-text); }
   .ep-calc .ep-total.is-empty .ep-total__value { color: var(--ep-muted); }
 
   .ep-calc .ep-noscript {
@@ -298,7 +308,7 @@
   @media (max-width: 767.98px) {
     .ep-calc { padding: 24px 16px 40px; }
     .ep-calc .ep-head { margin-bottom: 20px; }
-    .ep-calc .ep-title { font-size: 28px; line-height: 34px; }
+    .ep-calc .ep-title { font-size: 26px; line-height: 32px; }
     .ep-calc .ep-subtitle { margin-top: 8px; font-size: 16px; line-height: 24px; }
     .ep-calc .ep-main { gap: 12px; }
     .ep-calc .ep-layout { gap: 12px; }
@@ -315,7 +325,7 @@
       padding: 0;
       border: 0;
       background: none;
-      color: var(--ep-soft-text);
+      color: var(--tone-text);
       font-size: 15px;
       font-weight: 600;
       cursor: pointer;
@@ -337,15 +347,16 @@
 
   <div class="ep-wrap">
     <header class="ep-head">
-      <h1 class="ep-title">Экономика по продукту «Сообщество» автора сообществ</h1>
-      <p class="ep-subtitle">Замените примеры цифр на свои</p>
+      <h1 class="ep-title">Калькулятор дохода платного сообщества через КлабХаб&nbsp;x&nbsp;Edplace</h1>
+      <p class="ep-subtitle">КлабХаб&nbsp;x&nbsp;Edplace — площадка внутри Telegram, MAX и VK для сообществ, монетизации и масштабирования аудитории</p>
+      <p class="ep-subtitle ep-subtitle--hint">Замените примеры цифр на свои</p>
     </header>
 
     <div class="ep-layout">
       <div class="ep-main">
 
         <!-- 1. Период расчёта -->
-        <section class="ep-card" aria-labelledby="ep-s1">
+        <section class="ep-card ep-card--period" aria-labelledby="ep-s1">
           <div class="ep-card__head">
             <span class="ep-step" aria-hidden="true">1</span>
             <h2 class="ep-card__title" id="ep-s1">Период расчёта</h2>
@@ -363,10 +374,10 @@
         </section>
 
         <!-- 2. Платный клуб -->
-        <section class="ep-card" aria-labelledby="ep-s2">
+        <section class="ep-card ep-card--sub" aria-labelledby="ep-s2">
           <div class="ep-card__head">
             <span class="ep-step" aria-hidden="true">2</span>
-            <h2 class="ep-card__title" id="ep-s2">Платный клуб: доход с текущей базы</h2>
+            <h2 class="ep-card__title" id="ep-s2">Сколько принесёт платная подписка на ваше сообщество</h2>
           </div>
           <div class="ep-grid">
             <div class="ep-field">
@@ -426,10 +437,10 @@
         </section>
 
         <!-- 3. Рекомендации -->
-        <section class="ep-card" aria-labelledby="ep-s3">
+        <section class="ep-card ep-card--friends" aria-labelledby="ep-s3">
           <div class="ep-card__head">
             <span class="ep-step" aria-hidden="true">3</span>
-            <h2 class="ep-card__title" id="ep-s3">Дополнительный доход по рекомендациям</h2>
+            <h2 class="ep-card__title" id="ep-s3">Доход от того, что участники приводят друзей</h2>
           </div>
           <div class="ep-grid">
             <div class="ep-field">
@@ -473,10 +484,10 @@
         </section>
 
         <!-- 4. Мероприятия -->
-        <section class="ep-card" aria-labelledby="ep-s4">
+        <section class="ep-card ep-card--extra" aria-labelledby="ep-s4">
           <div class="ep-card__head">
             <span class="ep-step" aria-hidden="true">4</span>
-            <h2 class="ep-card__title" id="ep-s4">Платные мероприятия / продукты автора сообщества</h2>
+            <h2 class="ep-card__title" id="ep-s4">Дополнительный заработок внутри сообщества: платные встречи, продажа ваших продуктов, консультаций и пр.</h2>
           </div>
           <div class="ep-grid">
             <div class="ep-field">
@@ -526,15 +537,15 @@
           </div>
         </section>
 
-        <!-- 5. Расходы на EdPlace -->
-        <section class="ep-card" aria-labelledby="ep-s5">
+        <!-- 5. Расходы на КлабХаб x Edplace -->
+        <section class="ep-card ep-card--cost" aria-labelledby="ep-s5">
           <div class="ep-card__head">
             <span class="ep-step" aria-hidden="true">5</span>
-            <h2 class="ep-card__title" id="ep-s5">Расходы автора на EdPlace x КлабХаб</h2>
+            <h2 class="ep-card__title" id="ep-s5">Сколько вы заплатите за сервис КлабХаб&nbsp;x&nbsp;Edplace</h2>
           </div>
           <div class="ep-grid">
             <div class="ep-field">
-              <label class="ep-label" for="ep-Y">Абонентская плата EdPlace,&nbsp;₽/мес.</label>
+              <label class="ep-label" for="ep-Y">Абонентская плата КлабХаб&nbsp;x&nbsp;Edplace,&nbsp;₽/мес.</label>
               <div class="ep-control">
                 <input class="ep-input" id="ep-Y" data-id="Y" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="next" aria-describedby="ep-Y-err">
                 <span class="ep-unit" aria-hidden="true">₽</span>
@@ -542,7 +553,7 @@
               <p class="ep-error" id="ep-Y-err"></p>
             </div>
             <div class="ep-field">
-              <label class="ep-label" for="ep-AA">Комиссия EdPlace с транзакций,&nbsp;%</label>
+              <label class="ep-label" for="ep-AA">Комиссия КлабХаб&nbsp;x&nbsp;Edplace с транзакций,&nbsp;%</label>
               <div class="ep-control">
                 <input class="ep-input" id="ep-AA" data-id="AA" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" enterkeyhint="done" aria-describedby="ep-AA-err">
                 <span class="ep-unit" aria-hidden="true">%</span>
@@ -556,7 +567,7 @@
               <div class="ep-out" data-out="Z">—</div>
             </div>
             <div class="ep-field">
-              <span class="ep-label">Комиссия EdPlace за период,&nbsp;₽</span>
+              <span class="ep-label">Комиссия КлабХаб&nbsp;x&nbsp;Edplace за период,&nbsp;₽</span>
               <div class="ep-out" data-out="AC">—</div>
             </div>
           </div>
@@ -566,7 +577,7 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="ep-hint__body" id="ep-hint-5">
-              <p>Стоимость инфраструктуры EdPlace x КлабХаб. Здесь автоматически рассчитываются расходы на платформу (подписка + комиссия).</p>
+              <p>Стоимость инфраструктуры КлабХаб&nbsp;x&nbsp;Edplace. Здесь автоматически рассчитываются расходы на платформу (подписка + комиссия).</p>
               <p>В платформе всё уже настроено и включено в модель, чтобы избавить вас от трат на технических специалистов, менеджеров и личных затрат времени на развитие платформы (если хотели свой продукт сделать) или механик вовлечённости.</p>
             </div>
           </div>
@@ -579,7 +590,7 @@
         <section class="ep-card ep-result" id="ep-result" aria-labelledby="ep-s6">
           <div class="ep-card__head">
             <span class="ep-step" aria-hidden="true">6</span>
-            <h2 class="ep-card__title" id="ep-s6">Результат для автора сообщества</h2>
+            <h2 class="ep-card__title" id="ep-s6">Ваш итоговый доход за вычетом расходов</h2>
           </div>
           <p class="ep-result__meta" data-meta></p>
           <div aria-live="polite">
@@ -588,11 +599,11 @@
               <span class="ep-row__value" data-out="AE">—</span>
             </div>
             <div class="ep-row">
-              <span class="ep-row__label">Всего расходов на EdPlace,&nbsp;₽</span>
+              <span class="ep-row__label">Всего расходов на КлабХаб&nbsp;x&nbsp;Edplace,&nbsp;₽</span>
               <span class="ep-row__value" data-out="AF">—</span>
             </div>
             <div class="ep-total is-empty" data-total>
-              <span class="ep-total__label">Доход автора после оплаты EdPlace,&nbsp;₽</span>
+              <span class="ep-total__label">Доход автора после оплаты КлабХаб&nbsp;x&nbsp;Edplace,&nbsp;₽</span>
               <span class="ep-total__value" data-out="AG">—</span>
             </div>
           </div>
@@ -602,8 +613,8 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
             <div class="ep-hint__body" id="ep-hint-6">
-              <p>Итоговая прибыль автора сообщества через EdPlace x КлабХаб.</p>
-              <p>Здесь автоматически собирается вся выручка, вычитаются расходы на EdPlace x КлабХаб и показывается главный результат: сколько денег останется у вас на руках.</p>
+              <p>Итоговая прибыль автора сообщества через КлабХаб&nbsp;x&nbsp;Edplace.</p>
+              <p>Здесь автоматически собирается вся выручка, вычитаются расходы на КлабХаб&nbsp;x&nbsp;Edplace и показывается главный результат: сколько денег останется у вас на руках.</p>
             </div>
           </div>
         </section>
